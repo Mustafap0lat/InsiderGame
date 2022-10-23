@@ -109,6 +109,7 @@ route.get("/username/:username", (req, res) => {
     (user) => user.username === req.params.username
   );
   res.send(user || "no such username found");
+  console.log(user)
 });
 
 /**
@@ -352,7 +353,7 @@ route.get('/status/', (req, res) => {
   let objInsider = userList.filter(x => x.title === "Insider")
     .reduce((prev => prev))
 
-  if (votes === userList.length - 1 ) {
+  if (votes === userList.length ) {
     console.log(" Alla har röstat")
     if (objInsider.voteCount > (userList.length / 2)) {
       console.log("Majoriteten har röstat rätt")
