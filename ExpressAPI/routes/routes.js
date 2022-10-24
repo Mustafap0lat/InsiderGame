@@ -353,7 +353,7 @@ route.get('/status/', (req, res) => {
   let objInsider = userList.filter(x => x.title === "Insider")
     .reduce((prev => prev))
 
-  if (votes === userList.length ) {
+  if (votes === userList.length) {
     console.log(" Alla har röstat")
     if (objInsider.voteCount > (userList.length / 2)) {
       console.log("Majoriteten har röstat rätt")
@@ -374,7 +374,7 @@ route.get('/status/', (req, res) => {
 
 
 
-let scoreboard = userList.map(x => x.username + " " + x.score)
+let scoreboard = userList.map(x => x.username + ": " + x.score +  ", " )
 console.log(scoreboard)
 
 

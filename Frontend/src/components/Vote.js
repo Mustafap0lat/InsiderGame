@@ -13,7 +13,7 @@ const Vote = () => {
 
     let message =''
     let voteMessage = ''
-    let result = ''
+    let result = []
 
     useEffect(() => {
       axios
@@ -41,8 +41,6 @@ async function gameStats(){
       }
 
 
-
-
   let gameRunning = false;
 
 
@@ -66,25 +64,17 @@ async function gameStats(){
 
   let objInsider = users.filter(x => x.title === 'Insider')
 
-
   if (votes === users.length ) {
-
-   
     console.log(" Alla har röstat")
 
-   
     if (objInsider.voteCount > (users.length / 2)) {
       result = 'Majority has voted right'
       console.log("Majoriteten har röstat rätt")
 
-      for(let x of users){
-        if (x.title !== 'Insider' )
-        x.score +=1
-      }
+
 
     } else {
       console.log("Majoriteten har röstat fel")
-      objInsider.score += 2
       result = 'Majority has voted wrong'
     }
 
