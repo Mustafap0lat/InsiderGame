@@ -22,7 +22,7 @@ function GetById() {
   const title = users.title;
   const id = users.id;
   const score = users.score;
-  const secretWord = users.secretWord;
+  const host = users.host
 
   return (
     <>
@@ -63,7 +63,7 @@ function GetById() {
                         scope="col"
                         className="text-sm font-lg text-white px-6 py-4"
                       >
-                        Secret Word
+                        Host
                       </th>
                     </tr>
                   </thead>
@@ -87,12 +87,11 @@ function GetById() {
                           {score}
                         </td>
                         <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
-                          {secretWord}
+                          {host}
                         </td>
 
                         <td className="text-sm flex justify-between  items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap"></td>
                       </tr>
-                    
                   </tbody>
                 </table>
               </div>

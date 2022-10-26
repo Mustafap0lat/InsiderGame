@@ -10,6 +10,7 @@ route.use(cors());
 let userList = [
   {
     title: "",
+    host: "",
     username: "one",
     score: 0,
     secretWord: "Unknown",
@@ -19,6 +20,7 @@ let userList = [
   },
   {
     title: "",
+    host: "",
     username: "two",
     score: 0,
     secretWord: "Unknown",
@@ -28,6 +30,7 @@ let userList = [
   },
   {
     title: "",
+    host: "",
     username: "three",
     score: 0,
     secretWord: "Unknown",
@@ -37,6 +40,7 @@ let userList = [
   },
   {
     title: "",
+    host: "",
     username: "four",
     score: 0,
     secretWord: "Unknown",
@@ -46,6 +50,7 @@ let userList = [
   },
   {
     title: "",
+    host: "",
     username: "five",
     score: 0,
     secretWord: "Unknown",
@@ -142,6 +147,26 @@ route.post("/add/user/:username", (req, res) => {
   res.send(user);
 });
 
+route.post("/lobby/:username", (req, res) => {
+  const user = {
+    username: req.params.username,
+    status: "Game Host",
+    id: uuidv4()
+  };
+
+  userList.push(user);
+  res.send(user);
+});
+
+
+route.get("/lobby" , (req, res) =>{
+  const user = userList.find(
+    (user) => user.status === "Game Host"
+  )
+  res.send(user);
+
+})
+
 /**
  * @swagger
  *   /insider/start/{userAndWord}:
@@ -163,67 +188,80 @@ route.post("/add/user/:username", (req, res) => {
  *       responses:
  *          200:
  *            description: Succes
+ * 
  */
-route.put("/start/:userAndWord", (req, res) => {
+
+route.put("/host/:username", (req, res) => {
   resetTitles();
-  console.log(" SPELET ÄR IGÅNG:")
-
-  const userAndWord = req.params.userAndWord;
-
-  let UserNameIn = userAndWord.split(",")[0];
-  let secret = userAndWord.split(",")[1];
-
-  let objUser = userList.filter(x => x.username === UserNameIn)
-    .reduce((prev) => prev)
+  console.log("Hosten har maxat detta spelet:")
 
 
+  const host = req.params.username
+   
 
+  let objUser = userList.filter(x => x.username === host)
+  .reduce((prev) => prev)
 
-
-  objUser.secretWord = secret
-  objUser.title = "Game host"
+  objUser.host = "Host"
 
   res.status(200).send();
-
-  randomizeInsider(objUser);
 })
 
-function resetTitles() {
-  for (let x of userList) {
-    x.title = "";
-    x.secretWord = "";
-    x.voteCount = 0;
-    x.hasVoted = false;
-  }
-}
 
 
-function randomizeInsider(objUser) {
-  //let randomizedInt = 0;
-  let randomizedInt = Math.random() * (userList.length - 1)
-  const rounded = Math.round(randomizedInt)
+
+
+route.put("/start/", (req, res) => {
+    resetTitles();
+    console.log("SPELET ÄR IGÅNG:")
   
-
-  if (userList[rounded].username !== objUser.username) {
-
-    userList[rounded].title = "Insider";
-    userList[rounded].secretWord = objUser.secretWord;
-  } else {
-    //console.log(/*rounded,*/ "hit host")
-    randomizeInsider(objUser);
-  }
-
-
-
-  for (let player of userList) {
-    if (player.title !== "Game host") {
-      if (player.title !== "Insider") {
-        player.title = "Player"
-      }
+    res.status(200).send();
+  
+    randomizedRoles();
+  })
+  
+  function resetTitles() {
+    for (let x of userList) {
+      x.title = "";
+      x.secretWord = "";
+      x.voteCount = 0;
+      x.hasVoted = false;
     }
   }
-
-}
+  
+  function random(int) { return Math.round(Math.random() * (int)) }
+  
+  function randomizedRoles() {
+    //let randomizedInt = 0;
+    //const user = avrunda(slumpmässigt tal(mellan 0.000000000-1.000000000)*användare)
+    const randomizedMaster = random(userList.length - 1);
+    let randomizedInsider = random(userList.length - 1)
+    while(randomizedInsider == randomizedMaster){
+      randomizedInsider = random(userList.length - 1)
+    }
+    console.log(
+  `Master = ${userList[randomizedMaster].username}
+  Insider = ${userList[randomizedInsider].username}`)
+  
+    userList[randomizedMaster].title = "Master"
+    userList[randomizedInsider].title = "Insider"
+  /*
+    if (userList[randomizedUser].username !== objUser.username) {
+  
+      userList[randomizedUser].title = "Insider";
+      userList[randomizedUser].secretWord = objUser.secretWord;
+    } else {
+      //console.log("hit host")
+      randomizedRoles(objUser);
+    }
+    */
+  
+    for (let player of userList) {
+      if (player.title == "Master")   continue
+      if (player.title == "Insider")  continue
+      player.title = "Player"
+    }
+  }
 
 
 /**

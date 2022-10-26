@@ -12,11 +12,11 @@ function Add() {
 
   function submitForm(e) {
     e.preventDefault();
-    axios.post(`http://localhost:5000/insider/add/user/${username}`).then(navigate("/"));
+    axios.post(`http://localhost:5000/insider/add/user/${username}`).then(navigate("/Lobby"));
   }
   return (
     <div className="w-screen h-full flex flex-col justify-center items-center mt-16">
-      <h2 className="text-2xl font-bold">ADD USER</h2>
+      <h2 className="text-2xl font-bold">JOIN GAME</h2>
       <form className="w-[50%] h-full flex flex-col mt-2">
         <input
           value={username}
@@ -31,7 +31,7 @@ function Add() {
           type="submit"
           onClick={submitForm}
         >
-          ADD USER
+          JOIN GAME
         </button>
       </form>
     </div>

@@ -1,39 +1,38 @@
-import axios from "axios";
-import { Link } from "react-router-dom";
+import axios from 'axios';
+import { Link } from "react-router-dom"
 import React, { useEffect, useState } from "react";
-import { useNavigate , useParams} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Status = () => {
-
-const [users, setUsers] = useState([]);
-
-
-let message =''
-let voteMessage = ''
-let result = ''
+const Lobby = () => {
 
 
 
-  useEffect(() => {
-    axios
-    .get("http://localhost:5000/insider/status").then((res) => {
-      setUsers(res.data);
-      console.log(res.data);
-    });
-  }, []);
+    const [username, setUserName] = useState("")
+    const [lobby, setLobby] = useState([])
+    
+    const navigate = useNavigate();
+
+    function loadLobby() {
+        axios.get(`http://localhost:5000/insider/lobby/`).then((res) => {
+            setLobby(res.data)
+            console.log(res.data)
+        })
+      }
+
+      useEffect(() => {
+       loadLobby();
+    }, []);
+
+    const status = lobby.status;
+    const title = lobby.username;
 
 
 
 
-
-let scoreboard = users.map(x => x.username + " " + x.score)
-console.log(scoreboard)
-
-
-return (
-  <>
+  return (
+    <>
     <div className="w-[100vw] h-full justify-center items-center flex flex-col px-10 py-8 mt-8">
-    <h1 className="text-3xl font-bold">STATUS</h1>
+      <h1 className="text-3xl font-bold">DATA TABLE</h1>
       <div className="flex flex-col">
         <div className="overflow-x-auto mt-8 sm:-mx-6 items-center lg:-mx-8">
           <div className="py-4 inline-block min-w-full sm:px-6 lg:px-8">
@@ -45,13 +44,13 @@ return (
                       scope="col"
                       className="text-sm font-medium text-white px-6 py-4"
                     >
-                      Status
+                      #
                     </th>
                     <th
                       scope="col"
                       className="text-sm font-lg text-white px-6 py-4"
                     >
-                      Vote count
+                      Name
                     </th>
                     <th
                       scope="col"
@@ -60,26 +59,19 @@ return (
                   </tr>
                 </thead>
                 <tbody className="border-black border-b-2">
-                
-                    <tr
-                
+             
+                <tr
                       className="bg-white border-b-2 border-black"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black ">
-                      {message}
-                      </td>
-                      <td className="text-xl text-black font-semibold px-6 py-4 whitespace-nowrap">
-                      {scoreboard}
-                      </td>
-                  
-
-                      <td className="text-sm flex justify-between  items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap">
-                
-
-           
-                      </td>
-                    </tr>
-          
+                   >
+                     <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
+                       {status}
+                     </td>
+                     <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
+                       {title}
+                     </td>
+              
+                     <td className="text-sm flex justify-between  items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap"></td>
+                   </tr>
                 </tbody>
               </table>
             </div>
@@ -87,10 +79,15 @@ return (
         </div>
       </div>
     </div>
-
-   
   </>
-);
+  );
+
+
+
+
+
+
+
 }
 
-export default Status
+export default Lobby

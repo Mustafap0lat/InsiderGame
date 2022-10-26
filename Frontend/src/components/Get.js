@@ -1,9 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate , useParams} from "react-router-dom";
-
-
+import { useNavigate, useParams } from "react-router-dom";
 
 function Get() {
   const [users, setUsers] = useState([]);
@@ -19,8 +17,19 @@ function Get() {
     });
   }
 
+  function startGame(e) {
+    e.preventDefault();
+    axios
+      .put(`http://localhost:5000/insider/start/`)
+      .then(navigate("/vote"));
+  }
+
   useEffect(() => {
-    loadUsers();
+    const interval = setInterval(() => {
+      loadUsers();
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   function deleteUser(username) {
@@ -28,7 +37,6 @@ function Get() {
       .delete(`http://localhost:5000/insider/delete/username/${username}`)
       .then(loadUsers());
   }
-
 
   return (
     <>
@@ -74,8 +82,7 @@ function Get() {
 
                         <td className="text-sm flex justify-between  items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap">
                           <Link
-                     
-                             to={`/Getbyid/${data.username}`}
+                            to={`/Getbyid/${data.username}`}
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg"
                           >
                             View
@@ -97,11 +104,15 @@ function Get() {
             </div>
           </div>
         </div>
+        <button
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
+          onClick={startGame}
+        >
+          Start Game
+        </button>
       </div>
     </>
   );
 }
 
 export default Get;
-
-
