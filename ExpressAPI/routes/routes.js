@@ -270,6 +270,7 @@ route.put("/start/", (req, res) => {
   function random(int) { return Math.round(Math.random() * (int)) }
   
   function randomizedRoles() {
+    if(hostedLobby.length >= 4) {
     //let randomizedInt = 0;
     //const user = avrunda(slumpmässigt tal(mellan 0.000000000-1.000000000)*användare)
     const randomizedMaster = random(hostedLobby.length - 1);
@@ -277,6 +278,7 @@ route.put("/start/", (req, res) => {
     while(randomizedInsider == randomizedMaster){
       randomizedInsider = random(hostedLobby.length - 1)
     }
+
     console.log(
   `Master = ${hostedLobby[randomizedMaster].username}
   Insider = ${hostedLobby[randomizedInsider].username}`)
@@ -299,6 +301,7 @@ route.put("/start/", (req, res) => {
       if (player.title == "Insider")  continue
       player.title = "Player"
     }
+  }
   }
 
 
