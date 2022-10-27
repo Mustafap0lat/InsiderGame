@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
 function GetById() {
   const [users, setUsers] = useState([]);
 
   const { username } = useParams();
-
 
   useEffect(() => {
     axios
@@ -15,14 +15,26 @@ function GetById() {
         setUsers(res.data);
         console.log(res.data);
       });
-  },[]);
-  
+  }, []);
+
+  function addToLobby(username) {
+    axios
+      .post(`http://localhost:5000/insider/add/lobby/${username}`)
+      .then((res) => {
+        setUsers(res.data);
+        console.log(res.data);
+      });
+  }
+  async function hostGame(username) {
+    await axios.put(`http://localhost:5000/insider/host/${username}`);
+  }
+  function hostNjoin(username) {
+    addToLobby(username);
+    hostGame(username);
+  }
 
   const name = users.username;
-  const title = users.title;
   const id = users.id;
-  const score = users.score;
-  const host = users.host
 
   return (
     <>
@@ -33,7 +45,7 @@ function GetById() {
             <div className="py-4 inline-block min-w-full sm:px-6 lg:px-8">
               <div className="overflow-hidden">
                 <table className="min-w-full text-center">
-                  <thead className="border-b bg-gray-800">
+                  <thead className="border-b bg-gray-800 ">
                     <tr>
                       <th
                         scope="col"
@@ -51,47 +63,37 @@ function GetById() {
                         scope="col"
                         className="text-sm font-lg text-white px-6 py-4"
                       >
-                        Title
-                      </th>
-                      <th
-                        scope="col"
-                        className="text-sm font-lg text-white px-6 py-4"
-                      >
-                        Score
-                      </th>
-                      <th
-                        scope="col"
-                        className="text-sm font-lg text-white px-6 py-4"
-                      >
-                        Host
+                      
                       </th>
                     </tr>
                   </thead>
                   <tbody className="border-black border-b-2">
-                   
-                      <tr
-                     
-                        className="bg-white border-b-2 border-black"
+                    <tr className="bg-white border-b-2 border-black">
+                      <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
+                        {id}
+                      </td>
+                      <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
+                        {name}
+                      </td>
+                      <td className="text-sm flex justify-between items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap mt-8">
+                      <Link
+                        onClick={() => addToLobby(name)}
+                        to={"/lobby"}
+                        className="bg-red-600 text-white px-6 py-2 rounded-lg"
                       >
-                  
-                        <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
-                          {id}
-                        </td>
-                        <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
-                          {name}
-                        </td>
-                        <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
-                          {title}
-                        </td>
-                        <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
-                          {score}
-                        </td>
-                        <td className="text-xl text-gray-900 font-semibold px-6 py-4 whitespace-nowrap">
-                          {host}
-                        </td>
+                        Join Lobby
+                      </Link>
 
-                        <td className="text-sm flex justify-between  items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap"></td>
-                      </tr>
+                      <Link
+                        onClick={() => hostNjoin(name)}
+                        to={"/lobby"}
+                        className="bg-red-600 text-white px-6 py-2 rounded-lg"
+                      >
+                        Host Game
+                      </Link>
+                      </td>
+                      <td className="text-sm flex justify-between  items-center text-gray-900 font-bold px-6 py-4 space-x-4 whitespace-nowrap"></td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

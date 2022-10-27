@@ -59,6 +59,43 @@ let userList = [
     hasVoted: false
   }
 ];
+
+
+let hostedLobby = [
+
+
+];
+
+
+
+route.get("/lobbylist", (req, res) => {
+  res.send(hostedLobby);
+});
+
+route.post("/add/lobby/:username", (req, res) => {
+  const user = {
+    username: req.params.username,
+    title:'',
+    id: uuidv4(),
+    host:'',
+    score: 0,
+    voteCount:0,
+    hasVoted: false
+
+    
+  };
+  hostedLobby.push(user);
+  res.send(user);
+});
+
+
+route.delete("/delete/lobbyuser/:username", (req, res) => {
+  hostedLobby = hostedLobby.filter(
+    (user) => user.username !== req.params.username
+  );
+  res.status(200).send();
+});
+
 /*  {
       title: "",
     username: "boba",
@@ -147,10 +184,12 @@ route.post("/add/user/:username", (req, res) => {
   res.send(user);
 });
 
+
+
 route.post("/lobby/:username", (req, res) => {
   const user = {
     username: req.params.username,
-    status: "Game Host",
+    host: "Host",
     id: uuidv4()
   };
 
@@ -161,7 +200,7 @@ route.post("/lobby/:username", (req, res) => {
 
 route.get("/lobby" , (req, res) =>{
   const user = userList.find(
-    (user) => user.status === "Game Host"
+    (user) => user.status === "Host"
   )
   res.send(user);
 
@@ -192,14 +231,13 @@ route.get("/lobby" , (req, res) =>{
  */
 
 route.put("/host/:username", (req, res) => {
-  resetTitles();
+  //resetTitles();
   console.log("Hosten har maxat detta spelet:")
 
 
   const host = req.params.username
    
-
-  let objUser = userList.filter(x => x.username === host)
+  let objUser = hostedLobby.filter(x => x.username === host)
   .reduce((prev) => prev)
 
   objUser.host = "Host"
@@ -221,7 +259,7 @@ route.put("/start/", (req, res) => {
   })
   
   function resetTitles() {
-    for (let x of userList) {
+    for (let x of hostedLobby) {
       x.title = "";
       x.secretWord = "";
       x.voteCount = 0;
@@ -234,17 +272,17 @@ route.put("/start/", (req, res) => {
   function randomizedRoles() {
     //let randomizedInt = 0;
     //const user = avrunda(slumpmässigt tal(mellan 0.000000000-1.000000000)*användare)
-    const randomizedMaster = random(userList.length - 1);
-    let randomizedInsider = random(userList.length - 1)
+    const randomizedMaster = random(hostedLobby.length - 1);
+    let randomizedInsider = random(hostedLobby.length - 1)
     while(randomizedInsider == randomizedMaster){
-      randomizedInsider = random(userList.length - 1)
+      randomizedInsider = random(hostedLobby.length - 1)
     }
     console.log(
-  `Master = ${userList[randomizedMaster].username}
-  Insider = ${userList[randomizedInsider].username}`)
+  `Master = ${hostedLobby[randomizedMaster].username}
+  Insider = ${hostedLobby[randomizedInsider].username}`)
   
-    userList[randomizedMaster].title = "Master"
-    userList[randomizedInsider].title = "Insider"
+    hostedLobby[randomizedMaster].title = "Master"
+    hostedLobby[randomizedInsider].title = "Insider"
   /*
     if (userList[randomizedUser].username !== objUser.username) {
   
@@ -256,7 +294,7 @@ route.put("/start/", (req, res) => {
     }
     */
   
-    for (let player of userList) {
+    for (let player of hostedLobby) {
       if (player.title == "Master")   continue
       if (player.title == "Insider")  continue
       player.title = "Player"
@@ -324,11 +362,11 @@ route.put("/vote/:userAndGuess", (req, res) => {
   let youUsername = userAndGuess.split(",")[0];
   let guessUsername = userAndGuess.split(",")[1];
 
-  let objyou = userList.filter(x => x.username === youUsername)
+  let objyou = hostedLobby.filter(x => x.username === youUsername)
     .reduce((prev) => prev)
 
 
-  let objGuess = userList.filter(x => x.username === guessUsername)
+  let objGuess = hostedLobby.filter(x => x.username === guessUsername)
     .reduce((prev) => prev)
 
   if (objyou.hasVoted === false) {
@@ -368,8 +406,8 @@ route.get('/status/', (req, res) => {
   // ge status ifall spelet är igång, genom att kolla ifall någon är Game Host
   let gameRunning = false;
 
-  for (let x of userList) {
-    if (x.title === "Game host") {
+  for (let x of hostedLobby) {
+    if (x.title === "Host") {
       gameRunning = true
     }
   }
@@ -382,21 +420,22 @@ route.get('/status/', (req, res) => {
 
   // ifall spelet är över, visa hur många som inte har röstat
 
-  const votes = userList.map(x => x.hasVoted === true ? 1 : 0)
+  const votes = hostedLobby.map(x => x.hasVoted === true ? 1 : 0)
     .reduce((prev, curr) => prev + curr, 0)
 
 
 
   // Ifall alla har röstat, så ska rösterna kontrolleras och resultatet skrivas ut. 
-  let objInsider = userList.filter(x => x.title === "Insider")
+  let objInsider = hostedLobby.filter(x => x.title === "Insider")
     .reduce((prev => prev))
 
-  if (votes === userList.length) {
+  if (votes === hostedLobby.length) {
     console.log(" Alla har röstat")
-    if (objInsider.voteCount > (userList.length / 2)) {
+
+    if (objInsider.voteCount > (hostedLobby.length / 2)) {
       console.log("Majoriteten har röstat rätt")
 
-      for(let x of userList){
+      for(let x of hostedLobby){
         if (x.title !== "Insider" )
         x.score +=1
       }
@@ -407,12 +446,12 @@ route.get('/status/', (req, res) => {
     }
 
   } else {
-    console.log(votes + " av " + userList.length + " har röstat")
+    console.log(votes + " av " + hostedLobby.length  + " har röstat")
   }
 
 
 
-let scoreboard = userList.map(x => x.username + ": " + x.score +  ", " )
+let scoreboard = hostedLobby.map(x => x.username + ": " + x.score +  ", " )
 console.log(scoreboard)
 
 

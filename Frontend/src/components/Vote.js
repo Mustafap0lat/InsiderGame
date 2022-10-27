@@ -15,37 +15,45 @@ const Vote = () => {
     let voteMessage = ''
     let result = []
 
-    useEffect(() => {
-      axios
-      .get("http://localhost:5000/insider/allusers").then((res) => {
+  function loadLobby() {
+       axios
+      .get("http://localhost:5000/insider/lobbylist").then((res) => {
         setUsers(res.data);
         console.log(res.data);
-        gameStats()
+        console.log("FROM VOTE")
+       
       });
-    }, []);
+    };
 
-async function gameStats(){
-  console.log('STAUSCALL')
-  await axios.get("http://localhost:5000/insider/status").then((res) => {
+function gameStats(){
+  console.log('GAMESTATS')
+   axios.get("http://localhost:5000/insider/status").then((res) => {
     setStatus(res.data);
     console.log(res.data);
   });
 }
 
 
-   async function startVote(e) {
+  function startVote(e) {
         e.preventDefault();
-       await axios.put(`http://localhost:5000/insider/vote/${username},${userguess}`).then(
-       window.location.reload(true));
+       axios.put(`http://localhost:5000/insider/vote/${username},${userguess}`)
+       gameStats();
          
       }
+
+      useEffect(() => {
+        const interval = setInterval(() => {
+          loadLobby();
+        }, 1000);
+        return () => clearInterval(interval);
+      }, []);
 
 
   let gameRunning = false;
 
 
   for (let x of users) {
-    if (x.title === 'Game host') {
+    if (x.host === 'Host') {
       gameRunning = true
     }
   }
@@ -66,7 +74,7 @@ async function gameStats(){
 
   if (votes === users.length ) {
     console.log(" Alla har röstat")
-
+    
     if (objInsider.voteCount > (users.length / 2)) {
       result = 'Majority has voted right'
       console.log("Majoriteten har röstat rätt")

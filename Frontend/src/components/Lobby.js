@@ -13,7 +13,7 @@ const Lobby = () => {
     const navigate = useNavigate();
 
     function loadLobby() {
-        axios.get(`http://localhost:5000/insider/lobby/`).then((res) => {
+        axios.get(`http://localhost:5000/insider/lobby`).then((res) => {
             setLobby(res.data)
             console.log(res.data)
         })

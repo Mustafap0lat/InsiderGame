@@ -1,7 +1,5 @@
 import './index.css'
 import { Route, Routes } from "react-router-dom";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import React, { useEffect, useState } from "react";
 import Add from "./components/Add";
 import Navbar from "./components/Navbar";
 import Start from './components/Start';
@@ -23,7 +21,7 @@ function App() {
     <Routes>
     <Route path="/" element={<Insider />} />
     <Route path="/Host" element={<Start />} />
-      <Route path="/Join" element={<Add />} />
+      <Route path="/Add" element={<Add />} />
       <Route path="/Vote" element={<Vote />} />
       <Route path="/Lobby" element={<Get />} />
       <Route path="/Getbyid/:username" element={<GetById />} />

@@ -11,7 +11,7 @@ function Start () {
    async function hostGame(e) {
       e.preventDefault();
      await axios
-        .post(`http://localhost:5000/insider/host/${username}`)
+        .put(`http://localhost:5000/insider/host/${username}`)
         .then(navigate("/Lobby"));
     }
 
